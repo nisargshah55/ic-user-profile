@@ -1,0 +1,24 @@
+type Profile = 
+ record {
+   details: Details;
+   image: opt Image;
+ };
+type Image = 
+ record {
+   data: blob;
+   fileName: text;
+   filetype: text;
+ };
+type Details = 
+ record {
+   age: nat;
+   city: opt text;
+   country: text;
+   name: text;
+   state: opt text;
+   surname: text;
+ };
+service : {
+  create: (Profile) -> (bool);
+  read: (nat) -> (opt Profile) query;
+}

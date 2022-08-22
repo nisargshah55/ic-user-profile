@@ -1,0 +1,34 @@
+{
+  "canisters": {
+    "profile": {
+      "main": "src/profile/main.mo",
+      "type": "motoko"
+    },
+    "profile_assets": {
+      "dependencies": [
+        "profile"
+      ],
+      "frontend": {
+        "entrypoint": "src/profile_assets/src/index.html"
+      },
+      "source": [
+        "dist/",
+        "src/profile_assets/assets"
+      ],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+}
