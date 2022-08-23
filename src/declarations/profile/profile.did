@@ -1,3 +1,9 @@
+type ProfileWithId = 
+ record {
+   details: Details;
+   id: nat;
+   image: opt Image;
+ };
 type Profile = 
  record {
    details: Details;
@@ -20,5 +26,8 @@ type Details =
  };
 service : {
   create: (Profile) -> (bool);
+  delete: (nat) -> (bool);
+  listAllProfiles: () -> (vec ProfileWithId) query;
   read: (nat) -> (opt Profile) query;
+  update: (nat, Profile) -> (bool);
 }

@@ -1,4 +1,6 @@
 import type { Principal } from '@dfinity/principal';
+import type { ActorMethod } from '@dfinity/agent';
+
 export interface Details {
   'age' : bigint,
   'country' : string,
@@ -13,7 +15,15 @@ export interface Image {
   'filetype' : string,
 }
 export interface Profile { 'details' : Details, 'image' : [] | [Image] }
+export interface ProfileWithId {
+  'id' : bigint,
+  'details' : Details,
+  'image' : [] | [Image],
+}
 export interface _SERVICE {
-  'create' : (arg_0: Profile) => Promise<boolean>,
-  'read' : (arg_0: bigint) => Promise<[] | [Profile]>,
+  'create' : ActorMethod<[Profile], boolean>,
+  'delete' : ActorMethod<[bigint], boolean>,
+  'listAllProfiles' : ActorMethod<[], Array<ProfileWithId>>,
+  'read' : ActorMethod<[bigint], [] | [Profile]>,
+  'update' : ActorMethod<[bigint, Profile], boolean>,
 }

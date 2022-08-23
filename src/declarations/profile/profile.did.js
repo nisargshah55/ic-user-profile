@@ -13,9 +13,17 @@ export const idlFactory = ({ IDL }) => {
     'filetype' : IDL.Text,
   });
   const Profile = IDL.Record({ 'details' : Details, 'image' : IDL.Opt(Image) });
+  const ProfileWithId = IDL.Record({
+    'id' : IDL.Nat,
+    'details' : Details,
+    'image' : IDL.Opt(Image),
+  });
   return IDL.Service({
     'create' : IDL.Func([Profile], [IDL.Bool], []),
+    'delete' : IDL.Func([IDL.Nat], [IDL.Bool], []),
+    'listAllProfiles' : IDL.Func([], [IDL.Vec(ProfileWithId)], ['query']),
     'read' : IDL.Func([IDL.Nat], [IDL.Opt(Profile)], ['query']),
+    'update' : IDL.Func([IDL.Nat, Profile], [IDL.Bool], []),
   });
 };
 export const init = ({ IDL }) => { return []; };
