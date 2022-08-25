@@ -7,12 +7,23 @@ import { Link } from "react-router-dom";
 
 function NavigationBar() {
   return (
-    <div className="navbar">
-      <ul className="nav-links">
-        <Link to="/">Home</Link>
-        <Link to="/add">Add Profile</Link>
-      </ul>
-    </div>
+    <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
+      <Container className='px-0'>
+        <Navbar.Brand href="javascript:void(0);">User Profiles</Navbar.Brand>
+        <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className="me-auto">
+            <Nav.Link href="javascript:void(0);">
+              <Link to="/">Home</Link>
+            </Nav.Link>
+            <Nav.Link href="javascript:void(0);">
+              <Link to="/add">Add Profile</Link>
+            </Nav.Link>
+
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
 }
 
