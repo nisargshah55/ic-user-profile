@@ -33,3 +33,26 @@ form {
 #greeting:empty {
     display: none;
 }
+
+.navbar {
+    width: 100%;
+    min-height: 10vh;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    color: #fff;
+    background: rgba(33, 37, 41, 1) !important;
+}
+
+.navbar .nav-links {
+    width: 20%;
+    display: flex;
+    justify-content: space-around;
+    list-style: none;
+    margin-bottom: 0;
+}
+
+.navbar .nav-links>a {
+    color: #fff;
+    text-decoration: none;
+}

@@ -94,55 +94,59 @@ const CreateProfile = ({ match }) => {
   }
 
   return (
-    <Container>
+    <div className="mt-3 row d-flex justify-content-between align-items-center">
+      <h5 className='text-center'>
+        {isAddMode ? 'Create Profile' : 'Edit Profile'}
+      </h5>
 
-      <Col md={12}>
-        <h4 className='mt-2'>{isAddMode ? 'Create Profile' : 'Edit Profile'}</h4>
-        <Form>
-          <Form.Row>
-            <Form.Group as={Col} controlId="name" className="pt-3">
-              <Form.Label>Name</Form.Label>
-              <Form.Control value={allValues.name} type="text" placeholder="Enter Name" onChange={(event) => handleChange(event, 'name')} />
-            </Form.Group>
+      <Container className='px-0'>
+        <Col md={12} className='px-0'>
+          <Form>
+            <Form.Row>
+              <Form.Group as={Col} controlId="name" className="pt-3">
+                <Form.Label>Name</Form.Label>
+                <Form.Control value={allValues.name} type="text" placeholder="Enter Name" onChange={(event) => handleChange(event, 'name')} />
+              </Form.Group>
 
-            <Form.Group as={Col} controlId="surname" className="pt-3">
-              <Form.Label>Surname</Form.Label>
-              <Form.Control value={allValues.surname} type="text" placeholder="Enter Surname" onChange={(event) => handleChange(event, 'surname')} />
-            </Form.Group>
-          </Form.Row>
+              <Form.Group as={Col} controlId="surname" className="pt-3">
+                <Form.Label>Surname</Form.Label>
+                <Form.Control value={allValues.surname} type="text" placeholder="Enter Surname" onChange={(event) => handleChange(event, 'surname')} />
+              </Form.Group>
+            </Form.Row>
 
-          <Form.Row>
-            <Form.Group as={Col} controlId="age" className="pt-3">
-              <Form.Label>Age</Form.Label>
-              <Form.Control value={allValues.age} type="number" placeholder="Enter Age" onChange={(event) => handleChange(event, 'age')} />
-            </Form.Group>
+            <Form.Row>
+              <Form.Group as={Col} controlId="age" className="pt-3">
+                <Form.Label>Age</Form.Label>
+                <Form.Control value={allValues.age} type="number" placeholder="Enter Age" onChange={(event) => handleChange(event, 'age')} />
+              </Form.Group>
 
-            <Form.Group as={Col} controlId="city" className="pt-3">
-              <Form.Label>City</Form.Label>
-              <Form.Control value={allValues.city} type="text" placeholder="Enter City" onChange={(event) => handleChange(event, 'city')} />
-            </Form.Group>
-          </Form.Row>
+              <Form.Group as={Col} controlId="city" className="pt-3">
+                <Form.Label>City</Form.Label>
+                <Form.Control value={allValues.city} type="text" placeholder="Enter City" onChange={(event) => handleChange(event, 'city')} />
+              </Form.Group>
+            </Form.Row>
 
-          <Form.Row>
-            <Form.Group as={Col} controlId="state" className="pt-3">
-              <Form.Label>State</Form.Label>
-              <Form.Control value={allValues.state} type="text" placeholder="Enter State" onChange={(event) => handleChange(event, 'state')} />
-            </Form.Group>
+            <Form.Row>
+              <Form.Group as={Col} controlId="state" className="pt-3">
+                <Form.Label>State</Form.Label>
+                <Form.Control value={allValues.state} type="text" placeholder="Enter State" onChange={(event) => handleChange(event, 'state')} />
+              </Form.Group>
 
-            <Form.Group as={Col} controlId="country" className="pt-3">
-              <Form.Label>Country</Form.Label>
-              <Form.Control value={allValues.country} type="text" placeholder="Enter Country" onChange={(event) => handleChange(event, 'country')} />
-            </Form.Group>
-          </Form.Row>
+              <Form.Group as={Col} controlId="country" className="pt-3">
+                <Form.Label>Country</Form.Label>
+                <Form.Control value={allValues.country} type="text" placeholder="Enter Country" onChange={(event) => handleChange(event, 'country')} />
+              </Form.Group>
+            </Form.Row>
 
-        </Form>
-        <Col md={6} className="ml-0 mt-3 px-0">
-          <Button variant="primary" onClick={() => handleOnSubmit()}>
-            Submit
-          </Button>
+          </Form>
+          <Col md={6} className="ml-0 mt-3 px-0">
+            <Button variant="primary" onClick={() => handleOnSubmit()}>
+              Submit
+            </Button>
+          </Col>
         </Col>
-      </Col>
-    </Container >
+      </Container>
+    </div>
   )
 
 }

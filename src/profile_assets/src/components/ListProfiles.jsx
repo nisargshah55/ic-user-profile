@@ -66,10 +66,10 @@ const ListProfiles = (props) => {
   });
 
   return (
-    <div className="mt-5 row d-flex justify-content-between align-items-center">
+    <div className="mt-3 row d-flex justify-content-between align-items-center">
       <h5 className="text-center">Profile List</h5>
-      <div>
 
+      <div>
         <button className="btn btn-primary" onClick={addProfile}>
           Add New Profile
         </button>
