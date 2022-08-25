@@ -1,3 +1,8 @@
+type Result = 
+ variant {
+   err: Error;
+   ok: Profile;
+ };
 type ProfileWithId = 
  record {
    details: Details;
@@ -15,19 +20,24 @@ type Image =
    fileName: text;
    filetype: text;
  };
+type Error = 
+ variant {
+   AlreadyExists;
+   NotFound;
+ };
 type Details = 
  record {
    age: nat;
-   city: opt text;
+   city: text;
    country: text;
    name: text;
-   state: opt text;
+   state: text;
    surname: text;
  };
 service : {
   create: (Profile) -> (bool);
   delete: (nat) -> (bool);
   listAllProfiles: () -> (vec ProfileWithId) query;
-  read: (nat) -> (opt Profile) query;
+  read: (nat) -> (Result) query;
   update: (nat, Profile) -> (bool);
 }

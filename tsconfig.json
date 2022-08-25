@@ -1,15 +1,14 @@
 {
-    "compilerOptions": {
-      "allowJs": true,
-      "esModuleInterop": true,
-      "forceConsistentCasingInFileNames": true,
-      "jsx": "react",
-      "lib": [
-        "ES2020",
-        "DOM"
-      ],
-      "module": "commonjs",
-      "strict": true,
-      "target": "es2020"
-    }
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react",
+    "lib": [
+      "ES2020",
+      "DOM"
+    ],
+    "module": "commonjs",
+    "strict": true,
+    "target": "es2020"
   }
+}

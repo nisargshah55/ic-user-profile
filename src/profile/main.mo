@@ -1,16 +1,19 @@
+import Hash "mo:base/Hash";
 import Nat "mo:base/Nat";
+import Int8 "mo:base/Int8";
 import Text "mo:base/Text";
 import Trie "mo:base/Trie";
-import Hash "mo:base/Hash";
+import Result "mo:base/Result";
 import print "mo:base/Debug";
+import Error "mo:base/Error";
 
 actor Profile {
   type Details = {
     name: Text;
     surname: Text;
     age: Nat;
-    city: ?Text;
-    state: ?Text;
+    city: Text;
+    state: Text;
     country: Text;
   }; 
    
@@ -29,6 +32,11 @@ actor Profile {
     fileName: Text;
     data: Blob;
     filetype: Text;
+  };
+
+  type Error = {
+    #NotFound;
+    #AlreadyExists;
   };
 
   stable var profiles: Trie.Trie<Nat, Profile> = Trie.empty();
@@ -74,9 +82,9 @@ actor Profile {
         details = {
           name = profile.details.name ;
           surname = profile.details.surname ;
-          age = profile.details.age ;
-          city = profile.details.city ;
-          state = profile.details.state ;
+          age = profile.details.age;
+          city = profile.details.city;
+          state = profile.details.state;
           country = profile.details.country ;
         };
         
@@ -86,13 +94,13 @@ actor Profile {
   };
 
 // Read profile
-  public query func read (profileId : Nat) : async ?Profile {
+  public query func read (profileId : Nat) : async Result.Result<Profile, Error> {
     let result = Trie.find(
         profiles,           
         key(profileId),      
         Nat.equal     
     );
-    return result;
+    return Result.fromOption(result, #NotFound);
   };
 
   // Update User Profile

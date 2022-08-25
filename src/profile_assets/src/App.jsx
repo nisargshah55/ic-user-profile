@@ -1,37 +1,23 @@
 import * as React from 'react';
-import logo from "../assets/logo.png";
-import { profile } from "../../declarations/profile"
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import CreateProfile from './components/CreateProfile';
+import ListProfiles from './components/ListProfiles';
 
 const App = () => {
-  const [greeting, setGreeting] = React.useState("");
-  const [pending, setPending] = React.useState(false);
-  const inputRef = React.useRef();
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (pending) return;
-    setPending(true);
-    const name = inputRef.current.value.toString();
-
-    // Interact with profile actor, calling the greet method
- //   const greeting = await profile.greet(name);
- //   setGreeting(greeting);
-    setPending(false);
-    return false;
-  }
 
   return (
-    <main>
-      <img src={logo} alt="DFINITY logo" />
-      <form onSubmit={handleSubmit}>
-        <label htmlFor="name">Enter your name: &nbsp;</label>
-        <input id="name" alt="Name" type="text" ref={inputRef} />
-        <button id="clickMeBtn" type="submit" disabled={pending}>
-          Click Me!
-        </button>
-      </form>
-      <section id="greeting">{greeting}</section>
-    </main>
+    <div>
+      <BrowserRouter>
+        <div className="container">
+          <Switch>
+            <Route path="/" exact component={ListProfiles}></Route>
+            <Route path="/profiles" component={ListProfiles}></Route>
+            <Route path="/add" component={CreateProfile}></Route>
+            <Route path="/edit/:id" component={CreateProfile}></Route>
+          </Switch>
+        </div>
+      </BrowserRouter>
+    </div>
   );
 }
 

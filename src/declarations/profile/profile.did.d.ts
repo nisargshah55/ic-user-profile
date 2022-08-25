@@ -4,11 +4,13 @@ import type { ActorMethod } from '@dfinity/agent';
 export interface Details {
   'age' : bigint,
   'country' : string,
-  'city' : [] | [string],
+  'city' : string,
   'name' : string,
   'surname' : string,
-  'state' : [] | [string],
+  'state' : string,
 }
+export type Error = { 'NotFound' : null } |
+  { 'AlreadyExists' : null };
 export interface Image {
   'data' : Array<number>,
   'fileName' : string,
@@ -20,10 +22,12 @@ export interface ProfileWithId {
   'details' : Details,
   'image' : [] | [Image],
 }
+export type Result = { 'ok' : Profile } |
+  { 'err' : Error };
 export interface _SERVICE {
   'create' : ActorMethod<[Profile], boolean>,
   'delete' : ActorMethod<[bigint], boolean>,
   'listAllProfiles' : ActorMethod<[], Array<ProfileWithId>>,
-  'read' : ActorMethod<[bigint], [] | [Profile]>,
+  'read' : ActorMethod<[bigint], Result>,
   'update' : ActorMethod<[bigint, Profile], boolean>,
 }

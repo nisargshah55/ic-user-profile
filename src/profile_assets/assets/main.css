@@ -9,10 +9,11 @@ img {
     display: block;
     margin: auto;
 }
+
 form {
-    display: flex;
+    display: block;
     flex-flow: row wrap;
-    max-width: 40vw;
+    max-width: none;
     margin: auto;
     align-items: baseline;
 }
