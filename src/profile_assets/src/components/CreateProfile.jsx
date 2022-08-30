@@ -167,7 +167,6 @@ const CreateProfile = ({ match }) => {
       }
     }
 
-    console.log(profileDetails)
     if (isAddMode) {
       profileCanister.create(profileDetails).then(async response => {
 
