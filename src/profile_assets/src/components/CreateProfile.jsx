@@ -53,6 +53,9 @@ const CreateProfile = ({ match }) => {
   const [preview, setPreview] = useState("");
   const [activeImage, setActiveImage] = useState("");
 
+  const [oldFileName, setOldFileName] = useState("");
+  const [newFileName, setNewFileName] = useState("");
+
   const getProfileById = async (id, isAddMode) => {
     if (!isAddMode) {
       let response = await profileCanister.read(parseInt(id));
@@ -64,6 +67,8 @@ const CreateProfile = ({ match }) => {
         )
 
         const imageFile = response.ok.details.imageFile;
+        setOldFileName(imageFile);
+        setNewFileName(imageFile);
         loadImage(imageFile, parseInt(id));
       } else {
         console.error(response.err);
@@ -81,6 +86,8 @@ const CreateProfile = ({ match }) => {
 
     setActiveImage(`http://localhost:8000/assets/${batch_name}?canisterId=${canisterId}`);
     setPreview(`http://localhost:8000/assets/${batch_name}?canisterId=${canisterId}`);
+
+    console.log(`http://localhost:8000/assets/${batch_name}?canisterId=${canisterId}`)
   }
 
 
@@ -133,13 +140,19 @@ const CreateProfile = ({ match }) => {
 
   const handleOnSubmit = async () => {
 
+    debugger;
+
     let fileName;
     let file;
 
-    if (allValues.imageFile) {
-      fileName = allValues.imageFile[0].name + "_" + uuidv4();
-      file = allValues.imageFile[0];
+
+    if ((isAddMode && allValues.imageFile) || (!isAddMode && (oldFileName != newFileName))) {
+      fileName = allValues.imageFile[0]?.name ? allValues.imageFile[0]?.name : "";
+      file = allValues.imageFile[0] ? allValues.imageFile[0] : "";
+    } else {
+      fileName = allValues.imageFile;
     }
+
 
 
     const profileDetails = {
@@ -154,12 +167,13 @@ const CreateProfile = ({ match }) => {
       }
     }
 
+    console.log(profileDetails)
     if (isAddMode) {
       profileCanister.create(profileDetails).then(async response => {
 
         if (parseInt(response) > 0) {
 
-          uploadImage(file, fileName);
+          await uploadImage(file, fileName);
           toast.success("Profile Added Successfully !", options);
           history.push("/profiles");
         } else {
@@ -172,7 +186,10 @@ const CreateProfile = ({ match }) => {
     } else {
       profileCanister.update(id, profileDetails).then(async (response) => {
 
-        await uploadImage(file, fileName);
+        if (oldFileName != newFileName) {
+          await uploadImage(file, fileName);
+        }
+
         toast.success("Profile updated Successfully !", options);
         history.push("/profiles");
       }).catch(() => {
@@ -186,6 +203,8 @@ const CreateProfile = ({ match }) => {
 
     const newState = { profile: allValues };
     newState.profile.imageFile = file ? [file] : [];
+    newState.profile.imageFile.name = file.name + "_" + uuidv4();
+    setNewFileName(newState.profile.imageFile.name);
     setAllValues(newState.profile);
   }
 
@@ -256,7 +275,7 @@ const CreateProfile = ({ match }) => {
               </Form.Group>
             </Form.Row>
 
-            <Form.Row>
+            <Form.Row className='m-0'>
               <Form.Group controlId="imageFile" className="mb-3" >
                 <Form.Label>Upload Image</Form.Label>
                 <Form.Control type="file" onChange={handleFile}

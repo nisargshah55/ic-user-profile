@@ -235,6 +235,7 @@ actor UserProfile {
     };
 
 
+    // Handle Get request to get uploaded images
     public shared query({caller}) func http_request(
         request : Types.HttpRequest,
     ) : async Types.HttpResponse {
@@ -271,6 +272,8 @@ actor UserProfile {
         };
     };
 
+
+    // handle file chunks if there are file chunks left to process
     private func create_strategy(
         key : Text,
         index  : Nat,
@@ -292,6 +295,7 @@ actor UserProfile {
         };
     };
 
+    // returns the current file chunk, where the index of the chunk is determined by the token
     public shared query({caller}) func http_request_streaming_callback(
         st : Types.StreamingCallbackToken,
     ) : async Types.StreamingCallbackHttpResponse {
@@ -311,6 +315,7 @@ actor UserProfile {
         };
     };
 
+    // checks if there are remaining file chunks and returns a new token if there is
     private func create_token(
         key : Text,
         chunk_index : Nat,
