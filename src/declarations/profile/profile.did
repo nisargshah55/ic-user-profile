@@ -1,3 +1,20 @@
+type StreamingStrategy = variant {
+                           Callback:
+                            record {
+                              callback: func () -> ();
+                              token: StreamingCallbackToken;
+                            };};
+type StreamingCallbackToken = 
+ record {
+   content_encoding: text;
+   index: nat;
+   key: text;
+ };
+type StreamingCallbackHttpResponse = 
+ record {
+   body: vec nat8;
+   token: opt StreamingCallbackToken;
+ };
 type Result = 
  variant {
    err: Error;
@@ -7,18 +24,26 @@ type ProfileWithId =
  record {
    details: Details;
    id: nat;
-   image: opt Image;
  };
-type Profile = 
+type Profile = record {details: Details;};
+type HttpResponse = 
  record {
-   details: Details;
-   image: opt Image;
+   body: vec nat8;
+   headers: vec HeaderField;
+   status_code: nat16;
+   streaming_strategy: opt StreamingStrategy;
  };
-type Image = 
+type HttpRequest = 
  record {
-   data: blob;
-   fileName: text;
-   filetype: text;
+   body: vec nat8;
+   headers: vec HeaderField;
+   method: text;
+   url: text;
+ };
+type HeaderField = 
+ record {
+   text;
+   text;
  };
 type Error = 
  variant {
@@ -30,13 +55,29 @@ type Details =
    age: nat;
    city: text;
    country: text;
+   imageFile: text;
    name: text;
    state: text;
    surname: text;
  };
+type Chunk = 
+ record {
+   batch_name: text;
+   content: vec nat8;
+ };
 service : {
-  create: (Profile) -> (bool);
+  commit_batch:
+   (record {
+      batch_name: text;
+      chunk_ids: vec nat;
+      content_type: text;
+    }) -> ();
+  create: (Profile) -> (nat);
+  create_chunk: (Chunk) -> (record {chunk_id: nat;});
   delete: (nat) -> (bool);
+  http_request: (HttpRequest) -> (HttpResponse) query;
+  http_request_streaming_callback: (StreamingCallbackToken) ->
+   (StreamingCallbackHttpResponse) query;
   listAllProfiles: () -> (vec ProfileWithId) query;
   read: (nat) -> (Result) query;
   update: (nat, Profile) -> (bool);

@@ -2,8 +2,24 @@ import React, { useState, useEffect } from 'react';
 import { Button, Col, Container, Form } from 'react-bootstrap';
 import { useHistory } from "react-router-dom";
 import PropTypes from 'prop-types';
-import { profile as profileCanister } from "../../../declarations/profile";
+import { profile as profileCanister, canisterId } from "../../../declarations/profile";
 import { toast } from 'react-toastify';
+import { resizeImage } from "./resize";
+import { convertToBase64 } from "./utils";
+import { createRef } from "react";
+
+const pictureStyle = {
+  'width': '50%',
+  'height': '100%',
+  'display': 'flex',
+  'overflow': 'hidden'
+}
+
+const imageStyle = {
+  'width': '100%',
+  'height': '100%',
+  'minHeight': '100%'
+}
 
 const CreateProfile = ({ match }) => {
   const history = useHistory();
@@ -22,6 +38,8 @@ const CreateProfile = ({ match }) => {
     theme: "colored"
   }
 
+  const imageSize = 200;
+
   const [allValues, setAllValues] = useState({
     name: '',
     surname: '',
@@ -29,22 +47,48 @@ const CreateProfile = ({ match }) => {
     city: '',
     state: '',
     country: '',
+    imageFile: ''
   });
+
+  const [preview, setPreview] = useState("");
+  const [activeImage, setActiveImage] = useState("");
+
+  const inputRef = createRef();
+
+  const handleClick = () => {
+    inputRef.current?.click();
+  };
 
   const getProfileById = async (id, isAddMode) => {
     if (!isAddMode) {
       let response = await profileCanister.read(parseInt(id));
+      console.log(response);
       if ("ok" in response) {
         response.ok.details.age = parseInt(response.ok.details.age);
         setAllValues(
           response.ok.details
         )
+
+        const imageFile = response.ok.details.imageFile;
+        loadImage(imageFile, parseInt(id));
       } else {
         console.error(response.err);
         toast.error("Failed to fetch profile details", options);
       }
 
     }
+  }
+
+  const loadImage = (batch_name) => {
+
+    if (!batch_name) {
+      return;
+    }
+
+    console.log(`http://localhost:8000/assets/${batch_name}?canisterId=${canisterId}`)
+
+    setActiveImage(`http://localhost:8000/assets/${batch_name}?canisterId=${canisterId}`);
+    setPreview(`http://localhost:8000/assets/${batch_name}?canisterId=${canisterId}`);
   }
 
 
@@ -56,7 +100,12 @@ const CreateProfile = ({ match }) => {
     setAllValues({ ...allValues, [key]: e.target.value });
   }
 
-  const handleOnSubmit = () => {
+  const uploadChunk = async ({ batch_name, chunk }) => profileCanister.create_chunk({
+    batch_name,
+    content: [...new Uint8Array(await chunk.arrayBuffer())]
+  })
+
+  const handleOnSubmit = async () => {
 
     const profileDetails = {
       details: {
@@ -65,14 +114,48 @@ const CreateProfile = ({ match }) => {
         age: parseInt(allValues.age),
         city: allValues.city,
         state: allValues.state,
-        country: allValues.country
-      },
-      image: []
+        country: allValues.country,
+        imageFile: allValues.imageFile[0].name || ""
+      }
     }
 
+    console.log(profileDetails);
+
     if (isAddMode) {
-      profileCanister.create(profileDetails).then(response => {
-        if (response) {
+      profileCanister.create(profileDetails).then(async response => {
+        console.log(response)
+        if (parseInt(response) > 0) {
+
+          const id = parseInt(response);
+          console.log('start upload');
+
+          const file = allValues.imageFile[0];
+          console.log(file)
+          const batch_name = file.name;
+          const promises = [];
+          const chunkSize = 500000;
+
+          for (let start = 0; start < file.size; start += chunkSize) {
+            const chunk = file.slice(start, start + chunkSize);
+
+            promises.push(uploadChunk({
+              batch_name,
+              chunk
+            }));
+          }
+
+          const chunkIds = await Promise.all(promises);
+
+          console.log(chunkIds);
+
+          await profileCanister.commit_batch({
+            batch_name,
+            chunk_ids: chunkIds.map(({ chunk_id }) => chunk_id),
+            content_type: file.type
+          })
+
+          console.log('uploaded');
+
           toast.success("Profile Added Successfully !", options);
           history.push("/profiles");
         } else {
@@ -92,6 +175,42 @@ const CreateProfile = ({ match }) => {
     }
 
   }
+
+  const handleImage = (file) => {
+
+    const newState = { profile: allValues };
+    newState.profile.imageFile = file ? [file] : [];
+    setAllValues(newState.profile);
+  }
+
+  const handleFile = async (e) => {
+
+    const selectedFile = e.target.files[0];
+    const filetype = selectedFile.type;
+    const config = {
+      quality: 1,
+      width: imageSize,
+      height: imageSize,
+    };
+    const resized = await resizeImage(selectedFile, config);
+    const resizedString = await convertToBase64(
+      await resizeImage(selectedFile, config)
+    );
+
+    const data = [...new Uint8Array(await resized.arrayBuffer())];
+
+    let imageFile = {
+      fileName: `profile.${filetype.split("/").pop()}`,
+      filetype,
+      data,
+    };
+
+    setActiveImage(resizedString);
+    setPreview(resizedString);
+    handleImage(selectedFile);
+  };
+
+  const imgSrc = preview ? preview : activeImage ? activeImage : "";
 
   return (
     <div className="mt-3 row d-flex justify-content-between align-items-center">
@@ -138,8 +257,22 @@ const CreateProfile = ({ match }) => {
               </Form.Group>
             </Form.Row>
 
+            <Form.Row>
+              <Form.Group controlId="imageFile" className="mb-3" >
+                <Form.Label>Upload Image</Form.Label>
+                <Form.Control type="file" onChange={handleFile}
+                  accept="image/*" />
+              </Form.Group>
+
+              <Form.Group className='ml-5'>
+                <picture style={pictureStyle}>
+                  {imgSrc ? <img style={imageStyle} src={imgSrc} /> : null}
+                </picture>
+              </Form.Group>
+            </Form.Row>
+
           </Form>
-          <Col md={6} className="ml-0 mt-3 px-0">
+          <Col md={6} className="ml-0 my-3 px-0">
             <Button variant="primary" onClick={() => handleOnSubmit()}>
               Submit
             </Button>

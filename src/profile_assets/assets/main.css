@@ -52,11 +52,13 @@ form {
     margin-bottom: 0;
 }
 
-.navbar .nav-link>a {
+.navbar .nav-link>a,
+.navbar .navbar-brand>a {
     color: #fff;
     text-decoration: none;
 }
 
-.navbar .nav-link>a:hover {
+.navbar .nav-link>a:hover,
+.navbar .navbar-brand>a:hover {
     color: hsla(0, 0%, 100%, 0.75);
 }

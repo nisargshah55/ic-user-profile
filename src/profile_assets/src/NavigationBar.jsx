@@ -9,17 +9,14 @@ function NavigationBar() {
   return (
     <Navbar collapseOnSelect expand="lg" bg="dark" variant="dark">
       <Container className='px-0'>
-        <Navbar.Brand href="javascript:void(0);">User Profiles</Navbar.Brand>
+        <Navbar.Brand href="javascript:void(0);" as={Link} to="/">
+          User Profiles
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="responsive-navbar-nav" />
         <Navbar.Collapse id="responsive-navbar-nav">
           <Nav className="me-auto">
-            <Nav.Link href="javascript:void(0);">
-              <Link to="/">Home</Link>
-            </Nav.Link>
-            <Nav.Link href="javascript:void(0);">
-              <Link to="/add">Add Profile</Link>
-            </Nav.Link>
-
+            <Nav.Link href="javascript:void(0);" as={Link} to="/">Home</Nav.Link>
+            <Nav.Link href="javascript:void(0);" as={Link} to="/add">Add Profile</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
