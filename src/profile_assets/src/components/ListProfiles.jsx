@@ -19,6 +19,17 @@ const actionWidth = {
 };
 
 
+const options = {
+  position: "top-right",
+  autoClose: 5000,
+  hideProgressBar: true,
+  closeOnClick: true,
+  pauseOnHover: true,
+  draggable: true,
+  progress: undefined,
+  theme: "colored"
+}
+
 const ListProfiles = (props) => {
   const useRowStyles = makeStyles({
     root: {
@@ -38,6 +49,7 @@ const ListProfiles = (props) => {
   const loadProfiles = () => {
 
     profileCanister.listAllProfiles().then((result) => {
+      console.log(result);
       if (result) {
         setProfiles(result);
       }
@@ -54,11 +66,10 @@ const ListProfiles = (props) => {
 
   const deleteProfile = ((id) => {
     profileCanister.delete(parseInt(id)).then((result) => {
+      console.log(result);
       if (result) {
-        if (response) {
-          toast.success("Profile Deleted Successfully !", options);
-          loadProfiles();
-        }
+        toast.success("Profile Deleted Successfully !", options);
+        loadProfiles();
       }
     }).catch(() => {
       toast.error("Delete Profile Failure !", options);

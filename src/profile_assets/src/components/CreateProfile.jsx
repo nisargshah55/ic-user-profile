@@ -6,7 +6,7 @@ import { profile as profileCanister, canisterId } from "../../../declarations/pr
 import { toast } from 'react-toastify';
 import { resizeImage } from "./resize";
 import { convertToBase64 } from "./utils";
-import { createRef } from "react";
+import { v4 as uuidv4 } from 'uuid';
 
 const pictureStyle = {
   'width': '50%',
@@ -53,16 +53,10 @@ const CreateProfile = ({ match }) => {
   const [preview, setPreview] = useState("");
   const [activeImage, setActiveImage] = useState("");
 
-  const inputRef = createRef();
-
-  const handleClick = () => {
-    inputRef.current?.click();
-  };
-
   const getProfileById = async (id, isAddMode) => {
     if (!isAddMode) {
       let response = await profileCanister.read(parseInt(id));
-      console.log(response);
+
       if ("ok" in response) {
         response.ok.details.age = parseInt(response.ok.details.age);
         setAllValues(
@@ -85,8 +79,7 @@ const CreateProfile = ({ match }) => {
       return;
     }
 
-    console.log(`http://localhost:8000/assets/${batch_name}?canisterId=${canisterId}`)
-
+    console.log(`http://localhost:8000/assets/${batch_name}?canisterId=${canisterId}`);
     setActiveImage(`http://localhost:8000/assets/${batch_name}?canisterId=${canisterId}`);
     setPreview(`http://localhost:8000/assets/${batch_name}?canisterId=${canisterId}`);
   }
@@ -103,9 +96,52 @@ const CreateProfile = ({ match }) => {
   const uploadChunk = async ({ batch_name, chunk }) => profileCanister.create_chunk({
     batch_name,
     content: [...new Uint8Array(await chunk.arrayBuffer())]
-  })
+  });
+
+  const uploadImage = async (file, fileName) => {
+
+    if (!file) {
+      return;
+    }
+
+    console.log('start upload');
+
+    const batch_name = fileName;
+    const promises = [];
+    const chunkSize = 500000;
+
+    for (let start = 0; start < file.size; start += chunkSize) {
+      const chunk = file.slice(start, start + chunkSize);
+
+      promises.push(uploadChunk({
+        batch_name,
+        chunk
+      }));
+    }
+
+    const chunkIds = await Promise.all(promises);
+
+    await profileCanister.commit_batch({
+      batch_name,
+      chunk_ids: chunkIds.map(({ chunk_id }) => chunk_id),
+      content_type: file.type
+    });
+
+    console.log('uploaded');
+
+
+  };
 
   const handleOnSubmit = async () => {
+
+    let fileName;
+    let file;
+
+    if (allValues.imageFile) {
+      fileName = allValues.imageFile[0].name + "_" + uuidv4();
+      file = allValues.imageFile[0];
+    }
+
 
     const profileDetails = {
       details: {
@@ -115,47 +151,16 @@ const CreateProfile = ({ match }) => {
         city: allValues.city,
         state: allValues.state,
         country: allValues.country,
-        imageFile: allValues.imageFile[0].name || ""
+        imageFile: fileName || ""
       }
     }
 
-    console.log(profileDetails);
-
     if (isAddMode) {
       profileCanister.create(profileDetails).then(async response => {
-        console.log(response)
+
         if (parseInt(response) > 0) {
 
-          const id = parseInt(response);
-          console.log('start upload');
-
-          const file = allValues.imageFile[0];
-          console.log(file)
-          const batch_name = file.name;
-          const promises = [];
-          const chunkSize = 500000;
-
-          for (let start = 0; start < file.size; start += chunkSize) {
-            const chunk = file.slice(start, start + chunkSize);
-
-            promises.push(uploadChunk({
-              batch_name,
-              chunk
-            }));
-          }
-
-          const chunkIds = await Promise.all(promises);
-
-          console.log(chunkIds);
-
-          await profileCanister.commit_batch({
-            batch_name,
-            chunk_ids: chunkIds.map(({ chunk_id }) => chunk_id),
-            content_type: file.type
-          })
-
-          console.log('uploaded');
-
+          uploadImage(file, fileName);
           toast.success("Profile Added Successfully !", options);
           history.push("/profiles");
         } else {
@@ -166,7 +171,9 @@ const CreateProfile = ({ match }) => {
         toast.error("Add Profile Failure !", options);
       });
     } else {
-      profileCanister.update(id, profileDetails).then((response) => {
+      profileCanister.update(id, profileDetails).then(async (response) => {
+
+        await uploadImage(file, fileName);
         toast.success("Profile updated Successfully !", options);
         history.push("/profiles");
       }).catch(() => {
@@ -186,24 +193,17 @@ const CreateProfile = ({ match }) => {
   const handleFile = async (e) => {
 
     const selectedFile = e.target.files[0];
-    const filetype = selectedFile.type;
+
     const config = {
       quality: 1,
       width: imageSize,
       height: imageSize,
     };
-    const resized = await resizeImage(selectedFile, config);
+
     const resizedString = await convertToBase64(
       await resizeImage(selectedFile, config)
     );
 
-    const data = [...new Uint8Array(await resized.arrayBuffer())];
-
-    let imageFile = {
-      fileName: `profile.${filetype.split("/").pop()}`,
-      filetype,
-      data,
-    };
 
     setActiveImage(resizedString);
     setPreview(resizedString);

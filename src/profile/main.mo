@@ -62,7 +62,7 @@ actor UserProfile {
 
   // Create User Profile
 
-  public shared({caller}) func create(profile: Profile): async Nat {
+  public func create(profile: Profile): async Nat {
 
     let profileId = startIndex;
 
@@ -185,6 +185,7 @@ actor UserProfile {
     }
   };
 
+  // Create multiple chunks if file size is greater than 500kb
    public shared({caller}) func create_chunk(chunk: Types.Chunk) : async {
         chunk_id : Nat
     } {
@@ -194,6 +195,8 @@ actor UserProfile {
         return {chunk_id = nextChunkID};
     };
 
+
+  // concatenates the file chunks, and adds the content to the assets HashMap
     public shared({caller}) func commit_batch(
         {batch_name: Text; chunk_ids: [Nat]; content_type: Text} : {
             batch_name: Text;
