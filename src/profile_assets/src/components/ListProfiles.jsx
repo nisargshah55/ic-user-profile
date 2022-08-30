@@ -49,7 +49,6 @@ const ListProfiles = (props) => {
   const loadProfiles = () => {
 
     profileCanister.listAllProfiles().then((result) => {
-      console.log(result);
       if (result) {
         setProfiles(result);
       }
@@ -66,7 +65,6 @@ const ListProfiles = (props) => {
 
   const deleteProfile = ((id) => {
     profileCanister.delete(parseInt(id)).then((result) => {
-      console.log(result);
       if (result) {
         toast.success("Profile Deleted Successfully !", options);
         loadProfiles();

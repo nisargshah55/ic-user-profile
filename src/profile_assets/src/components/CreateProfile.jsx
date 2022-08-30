@@ -79,7 +79,6 @@ const CreateProfile = ({ match }) => {
       return;
     }
 
-    console.log(`http://localhost:8000/assets/${batch_name}?canisterId=${canisterId}`);
     setActiveImage(`http://localhost:8000/assets/${batch_name}?canisterId=${canisterId}`);
     setPreview(`http://localhost:8000/assets/${batch_name}?canisterId=${canisterId}`);
   }
