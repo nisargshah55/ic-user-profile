@@ -140,8 +140,6 @@ const CreateProfile = ({ match }) => {
 
   const handleOnSubmit = async () => {
 
-    debugger;
-
     let fileName;
     let file;
 
